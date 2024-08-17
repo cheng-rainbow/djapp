@@ -55,7 +55,7 @@ class Player extends MyGameObject {
             } else if (e.which === 1) {
                 if (outer.cur_skill === "fireball") {
                     outer.shoot_fireball(e.clientX, e.clientY);
-                    this.cur_skill = null;
+                    outer.cur_skill = null;
                 }
             }
         })
