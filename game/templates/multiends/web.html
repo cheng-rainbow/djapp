@@ -2,14 +2,15 @@
 
 <head>
     <link rel="stylesheet" href="https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css">
-    <script src="http://lib.sinaapp.com/js/jquery/1.6/jquery.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/game.css' %}">
-    <script src="{% static 'js/dist/game.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 </head>
 
 <body style="margin: 0">
     <div id="mygame"></div>
-    <script>
+    <script type="module">
+        import {MyGame} from "{% static 'js/dist/game.js' %}";
         $(document).ready(function(){
                 let mygame = new MyGame("mygame");
             })
