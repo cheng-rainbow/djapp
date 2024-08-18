@@ -25,7 +25,7 @@ class MyGameObject {
         this.on_destroy();
 
         for (let i = 0; i < MY_GAME_OBJECT.length; i ++)
-            if (MY_GAME_OBJECT[i] == this) {
+            if (MY_GAME_OBJECT[i] === this) {
                 MY_GAME_OBJECT.splice(i, 1);
                 break;
             }

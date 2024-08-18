@@ -17,6 +17,8 @@ class Player extends MyGameObject {
         this.is_me = is_me;
         this.eps = 0.02;
         this.f = 0.9;
+
+        this.spend_time = 0;
         
         this.cur_skill = null;
     }
@@ -24,7 +26,18 @@ class Player extends MyGameObject {
 
     start() {
         if (this.is_me) {
+
             this.add_listening_events();
+            setTimeout(() => {
+                let outer = this;
+                    $(window).keydown(function(e) {
+                            if (e.which === 81) {
+                            outer.cur_skill = "fireball";
+                            return false;
+                            }
+                            })
+
+                    }, 5000); 
         } else {
             let tx = Math.random() * this.playground.width;
             let ty = Math.random() * this.playground.height;
@@ -33,9 +46,22 @@ class Player extends MyGameObject {
     }
 
     is_attacked(angle, damage) {
+        for (let i = 0; i < 20 + Math.random() * 10; i ++) {
+            let x = this.x, y = this.y;
+            let radius = this.radius * Math.random() * 0.1;
+            let angle = Math.PI * 2 * Math.random();
+            let vx = Math.cos(angle), vy = Math.sin(angle);
+            let color = this.color; 
+            let speed = this.speed * 10;
+            let move_length = this.radius * Math.random() * 10;
+            new Particle(this.playground, x, y, radius, vx, vy, color, speed, move_length);
+        }
+
+
         this.radius -= damage;
         if (this.radius < 10) {
             this.destroy();
+            this.playground.del(this);
             return false;
         }
         this.damage_x = Math.cos(angle);
@@ -45,27 +71,23 @@ class Player extends MyGameObject {
     }
 
     add_listening_events() {
-       let outer = this;
-       this.playground.game_map.$canvas.on("contextmenu", function(e) {
-               return false;
-       });
-        this.playground.game_map.$canvas.mousedown(function (e) {
-            if (e.which === 3) {
-                outer.move_to(e.clientX, e.clientY);
-            } else if (e.which === 1) {
-                if (outer.cur_skill === "fireball") {
-                    outer.shoot_fireball(e.clientX, e.clientY);
-                    outer.cur_skill = null;
-                }
-            }
-        })
-
-        $(window).keydown(function(e) {
-            if (e.which === 81) {
-                outer.cur_skill = "fireball";
+        let outer = this;
+        this.playground.game_map.$canvas.on("contextmenu", function(e) {
                 return false;
-            }
-        })
+                });
+
+
+        this.playground.game_map.$canvas.mousedown(function (e) {
+                if (e.which === 3) {
+                outer.move_to(e.clientX, e.clientY);
+                } else if (e.which === 1) {
+                if (outer.cur_skill === "fireball") {
+                outer.shoot_fireball(e.clientX, e.clientY);
+                outer.cur_skill = null;
+                }
+                }
+                })
+
     }
 
     shoot_fireball(tx, ty) {
@@ -93,6 +115,16 @@ class Player extends MyGameObject {
     }
 
     update() {
+        this.spend_time += this.timedelta / 1000;
+        if (this.is_me === false && this.spend_time > 5 && Math.random() < 1 / 180.0) {
+            let player = this.playground.players[Math.floor( (Math.random() * 10) % this.playground.players.length)];
+            if (player != this) {
+                let tx = player.x + player.speed * this.vx * this.timedelta / 1000 ;
+                let ty = player.y + player.speed * this.vy * this.timedelta / 1000 ;
+                this.shoot_fireball(player.x, player.y);
+            }
+        }
+
         if (this.damage_speed > this.eps) {
             this.vx = 0, this.vy = 0;
             this.move_length = 0;
@@ -100,7 +132,7 @@ class Player extends MyGameObject {
             this.y += this.damage_y * this.damage_speed * this.timedelta / 1000;
             this.damage_speed *= this.f;
 
-           
+
         } else {
 
             if (this.move_length < this.eps) {

@@ -1,4 +1,5 @@
 
+
 class MyGamePlayground {
     constructor(root) {
         this.root = root;
@@ -21,8 +22,13 @@ class MyGamePlayground {
         
 
         for (let i = 0; i < 6; i ++) {
-            this.players.push(new Player(this, this.width / 3, this.height/2, this.height * 0.05,     "blue",this.height * 0.20, false));
+            this.players.push(new Player(this, this.width / 3, this.height/2, this.height * 0.05,     this.get_random_color(),this.height * 0.20, false));
         }
+    }
+
+    get_random_color() {
+        let colors = ["blue", "lightblue", "pink", "grey", "green", "red"];
+        return colors[Math.floor(Math.random() * 6)];
     }
 
 
@@ -39,7 +45,16 @@ class MyGamePlayground {
         this.$playground.show();
     }
 
+    
+    del(player) {
+        for (let i = 0; i < this.players.length; i ++) {
+            if (this.players[i] === player) {
+                this.players.splice(i, 1);
+            }
+        }
+    }
+
 
 }
-
+ 
 
